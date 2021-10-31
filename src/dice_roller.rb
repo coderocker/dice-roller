@@ -1,4 +1,4 @@
-require './dice.rb'
+require_relative './dice.rb'
 class DiceRoller
   attr_reader :no_of_dice, :scores, :total
   attr_accessor :dices
