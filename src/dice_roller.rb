@@ -1,11 +1,10 @@
+require './dice.rb'
 class DiceRoller
-  attr_reader :no_of_dice, :dices, :scores, :total
-
-  def initialize(no_of_dice = 1, sides =1)
-    raise ArgumentError unless no_of_dice.is_a?(Integer)
-    raise ArgumentError unless sides.is_a?(Integer)
-    @no_of_dice = no_of_dice == 0 ? 1 : no_of_dice
-    instanciate_dices
+  attr_reader :no_of_dice, :scores, :total
+  attr_accessor :dices
+  def initialize(dices = [])
+    raise ArgumentError unless dices.is_a?(Array)
+    @dices = dices
   end
 
   def roll_all
@@ -16,15 +15,30 @@ class DiceRoller
   end
 
   def show_results
-    p "all scores" + @scores.to_s
-    p "total score" + @total
+    @dices.each do |dice|
+      p "Dice with sides #{dice.sides} has score #{dice.last_score}"
+    end
+    p "Total Score #{@total}"
   end
+end
 
-  private
-  def instanciate_dices
-    @dices = []
-    @no_of_dice.times do
-      @dices.push(new Dice(sides))
+
+
+loop do
+  trap("INT") { abort("\nThanks for rolling!")}
+  p "Rolls dices example:  4d3 2d5 1d4.."
+  input = gets.chomp.to_s
+  abort("Thanks for rolling!") if input == "exit"
+
+
+  dice_inputs = input.split
+  dices = dice_inputs.flat_map do |dice_input|
+    no_of_dice, sides = dice_input.tr("^0-9", " ").split
+    no_of_dice.to_i.times.map do |i|
+      Dice.new(sides.to_i)
     end
   end
+  dr = DiceRoller.new(dices)
+  dr.roll_all
+  dr.show_results
 end
